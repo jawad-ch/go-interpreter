@@ -1,11 +1,17 @@
 package repl
 
 import (
+	"github.com/jawad-ch/go-interpreter/evaluator"
+	"io"
+)
+
+// Read-Parse-Print-Loop
+// -----Eval------------
+import (
 	"bufio"
 	"fmt"
 	"github.com/jawad-ch/go-interpreter/lexer"
 	"github.com/jawad-ch/go-interpreter/parser"
-	"io"
 )
 
 const PROMPT = ">> "
@@ -48,8 +54,11 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		_, _ = io.WriteString(out, program.String())
-		_, _ = io.WriteString(out, "\n")
+		evaluated := evaluator.Eval(program)
+		if evaluated != nil {
+			_, _ = io.WriteString(out, evaluated.Inspect())
+			_, _ = io.WriteString(out, "\n")
+		}
 
 		//for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
 		//	fmt.Printf("%+v\n", tok)
