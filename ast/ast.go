@@ -229,7 +229,7 @@ func (ie *IfExpression) TokenLiteral() string {
 func (ie *IfExpression) expressionNode() {}
 
 type FunctionLiteral struct {
-	Token      token.Token
+	Token      token.Token //the fn token
 	Parameters []*Identifier
 	Body       *BlockStatement
 }
