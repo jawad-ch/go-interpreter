@@ -1,6 +1,7 @@
 package code
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -11,6 +12,7 @@ func TestMake(t *testing.T) {
 		expected []byte
 	}{
 		{OpConstant, []int{65534}, []byte{byte(OpConstant), 255, 254}},
+		{OpAdd, []int{}, []byte{byte(OpAdd)}},
 	}
 
 	for _, test := range tests {
@@ -30,22 +32,22 @@ func TestMake(t *testing.T) {
 
 func TestInstructionsString(t *testing.T) {
 	instructions := []Instructions{
-		Make(OpConstant, 1),
+		Make(OpAdd),
 		Make(OpConstant, 2),
 		Make(OpConstant, 65535),
 	}
-	expected := `0000 OpConstant 1
-0003 OpConstant 2
-0006 OpConstant 65535
+	expected := `0000 OpAdd
+0001 OpConstant 2
+0004 OpConstant 65535
 `
 
-	concatted := Instructions{}
+	concatenated := Instructions{}
 	for _, ins := range instructions {
-		concatted = append(concatted, ins...)
+		concatenated = append(concatenated, ins...)
 	}
-
-	if concatted.String() != expected {
-		t.Errorf("instructions wrongly formatted.\nwant=%q\ngot=%q", expected, concatted.String())
+	fmt.Println(concatenated.String())
+	if concatenated.String() != expected {
+		t.Errorf("instructions wrongly formatted.\nwant=%q\ngot=%q", expected, concatenated.String())
 	}
 
 }

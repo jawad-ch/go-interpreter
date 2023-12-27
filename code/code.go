@@ -12,6 +12,7 @@ type Opcode byte
 
 const (
 	OpConstant Opcode = iota
+	OpAdd
 )
 
 type Definition struct {
@@ -21,6 +22,7 @@ type Definition struct {
 
 var definitions = map[Opcode]*Definition{
 	OpConstant: {"OpConstant", []int{2}},
+	OpAdd:      {"OpAdd", []int{}},
 }
 
 func Lookup(op byte) (*Definition, error) {
@@ -54,6 +56,7 @@ func Make(op Opcode, operands ...int) []byte {
 		}
 		offset += width
 	}
+
 	return instruction
 }
 
@@ -68,7 +71,9 @@ func (ins Instructions) String() string {
 			_, _ = fmt.Fprintf(&out, "ERROR: %s\n", err)
 			continue
 		}
+
 		operands, read := ReadOperands(def, ins[i+1:])
+
 		_, _ = fmt.Fprintf(&out, "%04d %s\n", i, ins.fmtInstruction(def, operands))
 		i += 1 + read
 	}
@@ -99,6 +104,8 @@ func (ins Instructions) fmtInstruction(def *Definition, operands []int) string {
 		return fmt.Sprintf("ERROR: operand len %d does not match defined %d\n", len(operands), operandCount)
 	}
 	switch operandCount {
+	case 0:
+		return def.Name
 	case 1:
 		return fmt.Sprintf("%s %d", def.Name, operands[0])
 	}
