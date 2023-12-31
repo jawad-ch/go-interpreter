@@ -1,8 +1,8 @@
 package repl
 
 import (
-	"github.com/jawad-ch/go-interpreter/evaluator"
-	"github.com/jawad-ch/go-interpreter/object"
+	"github.com/jawad-ch/go-interpreter/compiler"
+	"github.com/jawad-ch/go-interpreter/vm"
 	"io"
 )
 
@@ -32,7 +32,7 @@ const MONKEY_FACE = `            __,__
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	env := object.NewEnvironment()
+	//env := object.NewEnvironment()
 
 	for {
 		fmt.Println(PROMPT)
@@ -56,11 +56,29 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program, env)
-		if evaluated != nil {
-			_, _ = io.WriteString(out, evaluated.Inspect())
-			_, _ = io.WriteString(out, "\n")
+		comp := compiler.New()
+		err := comp.Compile(program)
+
+		if err != nil {
+			_, _ = fmt.Fprintf(out, "Woops! Compilation failed:\n %s\n", err)
+			continue
 		}
+
+		machine := vm.New(comp.Bytecode())
+		err = machine.Run()
+		if err != nil {
+			_, _ = fmt.Fprintf(out, "Woops! Executing bytecode failed:\n %s\n", err)
+		}
+
+		stackTop := machine.LastPoppedStackElem()
+		_, _ = io.WriteString(out, stackTop.Inspect())
+		_, _ = io.WriteString(out, "\n")
+
+		//evaluated := evaluator.Eval(program, env)
+		//if evaluated != nil {
+		//	_, _ = io.WriteString(out, evaluated.Inspect())
+		//	_, _ = io.WriteString(out, "\n")
+		//}
 
 		//for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
 		//	fmt.Printf("%+v\n", tok)
