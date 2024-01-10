@@ -113,7 +113,6 @@ func (c *Compiler) Compile(node ast.Node) error {
 			return fmt.Errorf("undefined variable %s", node.Value)
 		}
 		c.emit(code.OpGetGlobal, symbol.Index)
-
 	case *ast.PrefixExpression:
 		err := c.Compile(node.Right)
 		if err != nil {
@@ -128,7 +127,6 @@ func (c *Compiler) Compile(node ast.Node) error {
 		default:
 			return fmt.Errorf("unknown operator %s", node.Operator)
 		}
-
 	case *ast.IfExpression:
 		err := c.Compile(node.Condition)
 		if err != nil {
@@ -165,7 +163,6 @@ func (c *Compiler) Compile(node ast.Node) error {
 		}
 		afterAlternativePos := len(c.instructions)
 		c.changeOperand(jumpPos, afterAlternativePos)
-
 	case *ast.IntegerLiteral:
 		integer := &object.Integer{Value: node.Value}
 		c.emit(code.OpConstant, c.addConstant(integer))
@@ -200,6 +197,16 @@ func (c *Compiler) Compile(node ast.Node) error {
 			}
 		}
 		c.emit(code.OpHash, len(node.Pairs)*2)
+	case *ast.IndexExpression:
+		err := c.Compile(node.Left)
+		if err != nil {
+			return err
+		}
+		err = c.Compile(node.Index)
+		if err != nil {
+			return err
+		}
+		c.emit(code.OpIndex)
 	case *ast.Boolean:
 		if node.Value {
 			c.emit(code.OpTrue)
