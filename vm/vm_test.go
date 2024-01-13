@@ -188,6 +188,39 @@ earlyExit(); `,
 	runVmTests(t, tests)
 }
 
+func TestFunctionsWithoutReturnValue(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input:    `let noReturn = fn(){}; noReturn()`,
+			expected: Null,
+		},
+		{
+			input: `let noReturn = fn(){};
+					let noReturnTwo = fn(){ noReturn(); };
+					noReturn();
+					noReturnTwo();`,
+			expected: Null,
+		},
+		{
+			input:    `let returnsOne = fn() { 1; }; let returnsOneReturner = fn() { returnsOne; }; returnsOneReturner()();`,
+			expected: 1,
+		},
+	}
+
+	runVmTests(t, tests)
+}
+
+func TestFirstClassFunctions(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input:    `let returnsOne = fn() { 1; }; let returnsOneReturner = fn() { returnsOne; }; returnsOneReturner()();`,
+			expected: 1,
+		},
+	}
+
+	runVmTests(t, tests)
+}
+
 func parse(input string) *ast.Program {
 	l := lexer.New(input)
 	p := parser.New(l)
