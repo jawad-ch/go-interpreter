@@ -375,7 +375,7 @@ func (vm *VM) Run() error {
 			numArgs := code.ReadUint8(ins[ip+1:])
 			vm.CurrentFrame().ip += 1
 
-			err := vm.callFunction(int(numArgs))
+			err := vm.executeCall(int(numArgs))
 			if err != nil {
 				return err
 			}
@@ -424,6 +424,17 @@ func (vm *VM) Run() error {
 			if err != nil {
 				return err
 			}
+		case code.OpGetBuiltin:
+			builtinIdex := code.ReadUint8(ins[ip+1:])
+			vm.CurrentFrame().ip += 1
+
+			definition := object.Builtins[builtinIdex]
+
+			err := vm.push(definition.Builtin)
+
+			if err != nil {
+				return err
+			}
 
 		}
 	}
@@ -431,25 +442,25 @@ func (vm *VM) Run() error {
 	return nil
 }
 
-func (vm *VM) callFunction(numArgs int) error {
-
-	fn, ok := vm.stack[vm.sp-1-numArgs].(*object.CompiledFunction)
-	if !ok {
-		return fmt.Errorf("calling non-function")
-	}
-
-	if numArgs != fn.NumParameters {
-		return fmt.Errorf("wrong number of arguments: want=%d, got=%d", fn.NumParameters, numArgs)
-	}
-
-	frame := NewFrame(fn, vm.sp-numArgs)
-
-	vm.pushFrame(frame)
-
-	vm.sp = frame.basePointer + fn.NumLocals
-
-	return nil
-}
+//func (vm *VM) callFunction(numArgs int) error {
+//
+//	fn, ok := vm.stack[vm.sp-1-numArgs].(*object.CompiledFunction)
+//	if !ok {
+//		return fmt.Errorf("calling non-function")
+//	}
+//
+//	if numArgs != fn.NumParameters {
+//		return fmt.Errorf("wrong number of arguments: want=%d, got=%d", fn.NumParameters, numArgs)
+//	}
+//
+//	frame := NewFrame(fn, vm.sp-numArgs)
+//
+//	vm.pushFrame(frame)
+//
+//	vm.sp = frame.basePointer + fn.NumLocals
+//
+//	return nil
+//}
 
 func NewWithGlobalsStore(bytecode *compiler.Bytecode, s []object.Object) *VM {
 	vm := New(bytecode)
@@ -469,4 +480,45 @@ func (vm *VM) pushFrame(f *Frame) {
 func (vm *VM) popFrame() *Frame {
 	vm.framesIndex--
 	return vm.frames[vm.framesIndex]
+}
+
+func (vm *VM) executeCall(numArgs int) error {
+	callee := vm.stack[vm.sp-1-numArgs]
+
+	switch callee := callee.(type) {
+	case *object.CompiledFunction:
+		return vm.callFunction(callee, numArgs)
+	case *object.Builtin:
+		return vm.callBuiltin(callee, numArgs)
+	default:
+		return fmt.Errorf("calling non-function and non-built-in")
+	}
+}
+
+func (vm *VM) callFunction(fn *object.CompiledFunction, numArgs int) error {
+	if numArgs != fn.NumParameters {
+		return fmt.Errorf("wrong number of arguments: want=%d, got=%d", fn.NumParameters, numArgs)
+	}
+
+	frame := NewFrame(fn, vm.sp-numArgs)
+
+	vm.pushFrame(frame)
+
+	vm.sp = frame.basePointer + fn.NumLocals
+
+	return nil
+}
+
+func (vm *VM) callBuiltin(builtin *object.Builtin, numArgs int) error {
+	args := vm.stack[vm.sp-numArgs : vm.sp]
+
+	result := builtin.Fn(args...)
+	vm.sp = vm.sp - numArgs - 1
+
+	if result != nil {
+		_ = vm.push(result)
+	} else {
+		_ = vm.push(Null)
+	}
+	return nil
 }
