@@ -104,6 +104,7 @@ func Make(op Opcode, operands ...int) []byte {
 		case 2:
 			binary.BigEndian.PutUint16(instruction[offset:], uint16(o))
 		case 1:
+
 			instruction[offset] = byte(o)
 		}
 		offset += width
@@ -115,7 +116,6 @@ func Make(op Opcode, operands ...int) []byte {
 func (ins Instructions) String() string {
 	//return ""
 	var out bytes.Buffer
-
 	i := 0
 	for i < len(ins) {
 		def, err := Lookup(ins[i])
@@ -158,6 +158,7 @@ func ReadUint8(ins Instructions) uint8 {
 
 func (ins Instructions) fmtInstruction(def *Definition, operands []int) string {
 	operandCount := len(def.OperandWidths)
+
 	if len(operands) != operandCount {
 		return fmt.Sprintf("ERROR: operand len %d does not match defined %d\n", len(operands), operandCount)
 	}
@@ -166,6 +167,8 @@ func (ins Instructions) fmtInstruction(def *Definition, operands []int) string {
 		return def.Name
 	case 1:
 		return fmt.Sprintf("%s %d", def.Name, operands[0])
+	case 2:
+		return fmt.Sprintf("%s %d %d", def.Name, operands[0], operands[1])
 	}
 	return fmt.Sprintf("ERROR: unhandled operandCount for %s\n", def.Name)
 }

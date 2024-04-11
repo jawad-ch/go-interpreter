@@ -1,20 +1,19 @@
 package repl
 
 import (
-	"github.com/jawad-ch/go-interpreter/compiler"
-	"github.com/jawad-ch/go-interpreter/object"
-	"github.com/jawad-ch/go-interpreter/vm"
+	"bufio"
+	"fmt"
 	"io"
+
+	"github.com/jawad-ch/go-interpreter/compiler"
+	"github.com/jawad-ch/go-interpreter/lexer"
+	"github.com/jawad-ch/go-interpreter/object"
+	"github.com/jawad-ch/go-interpreter/parser"
+	"github.com/jawad-ch/go-interpreter/vm"
 )
 
 // Read-Parse-Print-Loop
 // -----Eval------------
-import (
-	"bufio"
-	"fmt"
-	"github.com/jawad-ch/go-interpreter/lexer"
-	"github.com/jawad-ch/go-interpreter/parser"
-)
 
 const PROMPT = ">> "
 
@@ -37,6 +36,10 @@ func Start(in io.Reader, out io.Writer) {
 	constants := []object.Object{}
 	globals := make([]object.Object, vm.GlobalsSize)
 	symbolTable := compiler.NewSymbolTable()
+
+	for i, v := range object.Builtins {
+		symbolTable.DefineBuiltin(i, v.Name)
+	}
 
 	for {
 		fmt.Println(PROMPT)

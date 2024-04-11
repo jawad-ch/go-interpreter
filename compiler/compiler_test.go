@@ -2,12 +2,13 @@ package compiler
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/jawad-ch/go-interpreter/ast"
 	"github.com/jawad-ch/go-interpreter/code"
 	"github.com/jawad-ch/go-interpreter/lexer"
 	"github.com/jawad-ch/go-interpreter/object"
 	"github.com/jawad-ch/go-interpreter/parser"
-	"testing"
 )
 
 type compilerTestCase struct {
@@ -656,17 +657,15 @@ func TestLetStatementScopes(t *testing.T) {
 func TestBuiltins(t *testing.T) {
 	tests := []compilerTestCase{
 		{
-			input: `
-			len([]); 
-			push([], 1);
-			`,
+			input: `len([]); 
+			push([],1);`,
 			expectedConstants: []interface{}{1},
 			expectedInstructions: []code.Instructions{
 				code.Make(code.OpGetBuiltin, 0),
 				code.Make(code.OpArray, 0),
 				code.Make(code.OpCall, 1),
 				code.Make(code.OpPop),
-				code.Make(code.OpGetBuiltin, 5), // TODO fix to 5
+				code.Make(code.OpGetBuiltin, 4),
 				code.Make(code.OpArray, 0),
 				code.Make(code.OpConstant, 0),
 				code.Make(code.OpCall, 2),
@@ -748,7 +747,7 @@ func concatInstructions(s []code.Instructions) code.Instructions {
 	return out
 }
 
-func testConstants(t *testing.T, expected []interface{}, actual []object.Object) error {
+func testConstants(_ *testing.T, expected []interface{}, actual []object.Object) error {
 	if len(expected) != len(actual) {
 		return fmt.Errorf("wrong number of constants. got=%d, want=%d", len(actual), len(expected))
 	}

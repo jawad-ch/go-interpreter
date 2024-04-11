@@ -2,10 +2,11 @@ package compiler
 
 import (
 	"fmt"
+	"sort"
+
 	"github.com/jawad-ch/go-interpreter/ast"
 	"github.com/jawad-ch/go-interpreter/code"
 	"github.com/jawad-ch/go-interpreter/object"
-	"sort"
 )
 
 type CompilationScope struct {
@@ -82,7 +83,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		if err != nil {
 			return err
 		}
-		//fmt.Println(node)
+
 		c.emit(code.OpPop)
 	case *ast.InfixExpression:
 		if node.Operator == "<" {
@@ -138,6 +139,7 @@ func (c *Compiler) Compile(node ast.Node) error {
 		}
 	case *ast.Identifier:
 		symbol, ok := c.symbolTable.Resolve(node.Value)
+
 		if !ok {
 			return fmt.Errorf("undefined variable %s", node.Value)
 		}

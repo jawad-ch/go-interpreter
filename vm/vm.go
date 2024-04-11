@@ -2,6 +2,7 @@ package vm
 
 import (
 	"fmt"
+
 	"github.com/jawad-ch/go-interpreter/code"
 	"github.com/jawad-ch/go-interpreter/compiler"
 	"github.com/jawad-ch/go-interpreter/object"
@@ -13,7 +14,6 @@ const MaxFrames = 1024
 
 var True = &object.Boolean{Value: true}
 var False = &object.Boolean{Value: false}
-
 var Null = &object.Null{}
 
 func (f *Frame) Instructions() code.Instructions {
@@ -516,9 +516,9 @@ func (vm *VM) callBuiltin(builtin *object.Builtin, numArgs int) error {
 	vm.sp = vm.sp - numArgs - 1
 
 	if result != nil {
-		_ = vm.push(result)
+		vm.push(result)
 	} else {
-		_ = vm.push(Null)
+		vm.push(Null)
 	}
 	return nil
 }

@@ -2,12 +2,13 @@ package vm
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/jawad-ch/go-interpreter/ast"
 	"github.com/jawad-ch/go-interpreter/compiler"
 	"github.com/jawad-ch/go-interpreter/lexer"
 	"github.com/jawad-ch/go-interpreter/object"
 	"github.com/jawad-ch/go-interpreter/parser"
-	"testing"
 )
 
 type vmTestCase struct {
@@ -120,8 +121,8 @@ func TestHashLiterals(t *testing.T) {
 		},
 		{
 			"{1: 2, 2: 3}", map[object.HashKey]int64{
-			(&object.Integer{Value: 1}).HashKey(): 2,
-			(&object.Integer{Value: 2}).HashKey(): 3},
+				(&object.Integer{Value: 1}).HashKey(): 2,
+				(&object.Integer{Value: 2}).HashKey(): 3},
 		},
 		{"{1 + 1: 2 * 2, 3 + 3: 4 * 4}", map[object.HashKey]int64{
 			(&object.Integer{Value: 2}).HashKey(): 4,
@@ -514,7 +515,7 @@ func testExpectedObject(t *testing.T, expected interface{}, actual object.Object
 		}
 
 		if errObj.Message != expected.Message {
-			t.Errorf("wrong error message. expected=%q, go=%q", expected.Message, errObj.Message)
+			t.Errorf("wrong error message. expected=%q, got=%q", expected.Message, errObj.Message)
 		}
 	}
 }
