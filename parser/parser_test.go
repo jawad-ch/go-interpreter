@@ -2,9 +2,10 @@ package parser
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/jawad-ch/go-interpreter/ast"
 	"github.com/jawad-ch/go-interpreter/lexer"
-	"testing"
 )
 
 func TestLetStatements(t *testing.T) {
@@ -14,7 +15,7 @@ func TestLetStatements(t *testing.T) {
 		expectedIdentifier string
 		expectedValue      interface{}
 	}{
-		{"let x = 5;", "x", 5},
+		{"let x = 5", "x", 5},
 		{"let y = true;", "y", true},
 		{"let foobar = y;", "foobar", "y"},
 	}
@@ -638,7 +639,7 @@ func TestStringLiteral(t *testing.T) {
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 	for _, stmt := range program.Statements {
-		stmtExpression, ok := stmt.(*ast.ExpressionStatement)
+		stmtExpression, _ := stmt.(*ast.ExpressionStatement)
 		literal, ok := stmtExpression.Expression.(*ast.StringLiteral)
 		if !ok {
 			t.Errorf("stmt not *ast.StringLiteral. got=%T", stmtExpression.Expression)
@@ -656,7 +657,7 @@ func TestParsingArrayLiterals(t *testing.T) {
 	p := New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
-	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	stmt, _ := program.Statements[0].(*ast.ExpressionStatement)
 
 	array, ok := stmt.Expression.(*ast.ArrayLiteral)
 
@@ -678,7 +679,7 @@ func TestParsingIndexExpressions(t *testing.T) {
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
-	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	stmt, _ := program.Statements[0].(*ast.ExpressionStatement)
 	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
 
 	if !ok {
