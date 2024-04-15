@@ -50,7 +50,7 @@ func TestInstructionsString(t *testing.T) {
 	for _, ins := range instructions {
 		concatenated = append(concatenated, ins...)
 	}
-	//fmt.Println(concatenated.String())
+
 	if concatenated.String() != expected {
 		t.Errorf("instructions wrongly formatted.\nwant=%q\ngot=%q", expected, concatenated.String())
 	}

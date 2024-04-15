@@ -600,7 +600,6 @@ func runVmTests(t *testing.T, tests []vmTestCase) {
 		// 		fmt.Printf("Value: %d\n", constant.Value)
 		// 	}
 
-		// 	fmt.Println()
 		// }
 
 		vm := New(comp.Bytecode())

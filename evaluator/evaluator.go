@@ -2,6 +2,7 @@ package evaluator
 
 import (
 	"fmt"
+
 	"github.com/jawad-ch/go-interpreter/ast"
 	"github.com/jawad-ch/go-interpreter/object"
 )
@@ -13,8 +14,7 @@ var (
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
-	//tt := fmt.Sprintf("%T", node)
-	//fmt.Println(tt, "=>", node.String())
+
 	switch node := node.(type) {
 	case *ast.Program:
 		return evalProgram(node, env)

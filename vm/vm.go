@@ -263,14 +263,13 @@ func (vm *VM) Run() error {
 	var ins code.Instructions
 	var op code.Opcode
 
-	//fmt.Println(len(vm.instructions))
 	for vm.CurrentFrame().ip < len(vm.CurrentFrame().Instructions())-1 {
 		vm.CurrentFrame().ip++
 		ip = vm.CurrentFrame().ip
 		ins = vm.CurrentFrame().Instructions()
 
 		op = code.Opcode(ins[ip])
-		//fmt.Println(ip)
+
 		switch op {
 		case code.OpConstant:
 			constIndex := code.ReadUint16(ins[ip+1:])
@@ -463,7 +462,7 @@ func (vm *VM) Run() error {
 
 		}
 	}
-	//fmt.Println(vm.stack)
+
 	return nil
 }
 

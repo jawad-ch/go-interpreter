@@ -45,7 +45,7 @@ func (s *SymbolTable) Define(name string) Symbol {
 func (s *SymbolTable) Resolve(name string) (Symbol, bool) {
 	obj, ok := s.store[name]
 	if !ok && s.Outer != nil {
-		//fmt.Println("hope you don't get in here")
+
 		obj, ok = s.Outer.Resolve(name)
 		if !ok {
 			return obj, ok
