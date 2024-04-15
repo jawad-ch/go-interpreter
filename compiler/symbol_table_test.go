@@ -254,11 +254,9 @@ func TestResolveFree(t *testing.T) {
 func TestResolveUnresolvableFree(t *testing.T) {
 	global := NewSymbolTable()
 	global.Define("a")
-	global.Define("b")
 
 	firstLocal := NewEnclosedSymbolTable(global)
 	firstLocal.Define("c")
-	firstLocal.Define("d")
 
 	secondLocal := NewEnclosedSymbolTable(firstLocal)
 	secondLocal.Define("e")
@@ -283,8 +281,8 @@ func TestResolveUnresolvableFree(t *testing.T) {
 	}
 
 	expectedUnresolvable := []string{
-		"a",
 		"b",
+		"d",
 	}
 
 	for _, name := range expectedUnresolvable {

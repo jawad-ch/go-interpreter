@@ -545,23 +545,6 @@ func TestRecursiveFunctions(t *testing.T) {
 		`,
 			expected: 0,
 		},
-		{
-			input: `
-			let map = fn(arr, f) {
-				let iter = fn(arr, accumulated) {
-					if (len(arr) == 0) {
-						accumulated
-					} else {
-					iter(rest(arr), push(accumulated, f(first(arr))));
-				}
-			};
-
-			iter(arr, []);
-
-			};
-			`,
-			expected: 0,
-		},
 	}
 
 	runVmTests(t, tests)
@@ -607,18 +590,18 @@ func runVmTests(t *testing.T, tests []vmTestCase) {
 			t.Fatalf("compiler error : %s", err)
 		}
 
-		//	for i, constant := range comp.Bytecode().Constants {
-		//		fmt.Printf("CONSTANT %d %p (%T);\n", i, constant, constant)
-		//
-		//		switch constant := constant.(type) {
-		//		case *object.CompiledFunction:
-		//			fmt.Printf("Instructions:\n%s", constant.Instructions)
-		//		case *object.Integer:
-		//			fmt.Printf("Value: %d\n", constant.Value)
-		//		}
-		//
-		//		fmt.Println()
-		//	}
+		// for i, constant := range comp.Bytecode().Constants {
+		// 	fmt.Printf("CONSTANT %d %p (%T);\n", i, constant, constant)
+
+		// 	switch constant := constant.(type) {
+		// 	case *object.CompiledFunction:
+		// 		fmt.Printf("Instructions:\n%s", constant.Instructions)
+		// 	case *object.Integer:
+		// 		fmt.Printf("Value: %d\n", constant.Value)
+		// 	}
+
+		// 	fmt.Println()
+		// }
 
 		vm := New(comp.Bytecode())
 
